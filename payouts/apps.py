@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.db.utils import OperationalError, ProgrammingError
 
 
 class PayoutsConfig(AppConfig):
@@ -6,18 +7,23 @@ class PayoutsConfig(AppConfig):
     name = 'payouts'
 
     def ready(self):
-        from .models import Merchant, BankAccount, LedgerEntry
+        try:
+            from .models import Merchant, BankAccount, LedgerEntry
 
-        if not Merchant.objects.exists():
-            m = Merchant.objects.create(name="Live Merchant")
+            if not Merchant.objects.exists():
+                m = Merchant.objects.create(name="Live Merchant")
 
-            bank = BankAccount.objects.create(
-                merchant=m,
-                account_number="123456789"
-            )
+                bank = BankAccount.objects.create(
+                    merchant=m,
+                    account_number="123456789"
+                )
 
-            LedgerEntry.objects.create(
-                merchant=m,
-                amount_paise=10000,
-                type="credit"
-            )
+                LedgerEntry.objects.create(
+                    merchant=m,
+                    amount_paise=10000,
+                    type="credit"
+                )
+
+        except (OperationalError, ProgrammingError):
+            # 🔥 Ignore errors before migrations
+            pass
