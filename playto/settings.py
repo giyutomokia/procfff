@@ -1,51 +1,48 @@
 import os
+import dj_database_url
 
+# 🔐 Security
 SECRET_KEY = os.environ.get("SECRET_KEY", "test-key")
 
-DEBUG = False   # ✅ production
+DEBUG = False
 
-ALLOWED_HOSTS = ["*"]   # ✅ required for Render
+ALLOWED_HOSTS = ["*"]
 
+
+# 📦 Apps
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'payouts.apps.PayoutsConfig',
 
     'rest_framework',
-    
+    'payouts.apps.PayoutsConfig',  # ✅ required for auto-seed
 ]
 
+
+# ⚙️ Middleware
 MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
+
+# 🌐 URLs
 ROOT_URLCONF = 'playto.urls'
 
 
-# ✅ DATABASE (auto switch)
-if os.environ.get("DB_NAME"):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get("DB_NAME"),
-            'USER': os.environ.get("DB_USER"),
-            'PASSWORD': os.environ.get("DB_PASSWORD"),
-            'HOST': os.environ.get("DB_HOST"),
-            'PORT': os.environ.get("DB_PORT"),
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'db.sqlite3',
-        }
-    }
+# 🗄️ Database (Render + Local)
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3'
+    )
+}
 
 
+# 🔢 Default ID
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# 📡 DRF Config
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
