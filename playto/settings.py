@@ -13,7 +13,7 @@ INSTALLED_APPS = [
     'payouts.apps.PayoutsConfig',
 
     'rest_framework',
-    'payouts',
+    
 ]
 
 MIDDLEWARE = [
